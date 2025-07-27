@@ -1,15 +1,15 @@
 # Use Ubuntu 24.04 as base
 FROM ubuntu:24.04
 
-# Create non-root user for security first
-RUN groupadd -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs nextjs
-
-# Install Volta for the nextjs user
+# Install dependencies first
 RUN apt-get update && \
     apt-get install -y curl bash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Create non-root user with home directory
+RUN groupadd -g 1001 nodejs && \
+    useradd -r -u 1001 -g nodejs -m nextjs
 
 # Switch to non-root user for Volta installation
 USER nextjs

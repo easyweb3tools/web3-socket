@@ -15,16 +15,16 @@ A real-time communication middleware service based on Socket.IO, providing scala
 
 ## Tech Stack
 
-- **Runtime**: Node.js 22.12.0 with TypeScript 5.3.x (version management via Volta recommended)
-- **WebSocket**: Socket.IO 4.7.x with Redis adapter for scaling
-- **HTTP Framework**: Express 4.x with CORS and Helmet security
-- **Database**: Redis 4.x (for horizontal scaling and session management)
-- **Logging**: Pino with structured logging and log rotation
-- **Metrics**: Prometheus client with custom metrics collection
-- **Dashboard**: Next.js 14.x with React 18.x, Chart.js, and Tailwind CSS
+- **Runtime**: Node.js 22.12.0 with TypeScript 5.3.x (version management via Volta)
+- **WebSocket**: Socket.IO 4.7.x with Redis adapter 8.2.x for scaling
+- **HTTP Framework**: Express 4.18.x with CORS and Helmet security
+- **Database**: Redis 4.6.x (for horizontal scaling and session management)
+- **Logging**: Pino 8.x with structured logging and log rotation
+- **Metrics**: Prometheus client 15.x with custom metrics collection
+- **Dashboard**: Next.js 14.x with React 18.x, Chart.js 4.x, and Tailwind CSS 3.x
 - **Security**: JWT authentication, API key protection, input validation, sanitization
-- **Container**: Docker with Ubuntu 24.04 and Volta for version management
-- **Testing**: Jest with comprehensive unit, integration, load, and security test suites
+- **Container**: Docker with Ubuntu 24.04 and Volta for exact version management
+- **Testing**: Jest 29.x with comprehensive unit, integration, load, and security test suites
 
 ## Inspiration
 
@@ -100,8 +100,8 @@ We built web3-socket using a layered architecture approach:
 
 - Node.js 22.12.0 (exact version required for compatibility)
 - npm 10.9.0 (exact version required for compatibility)
-- Redis 6.x or higher (for horizontal scaling and session management)
-- [Volta](https://volta.sh/) (recommended for automatic Node.js/npm version management)
+- Redis 4.6.x or higher (for horizontal scaling and session management)
+- [Volta](https://volta.sh/) (for automatic Node.js/npm version management)
 - Docker (optional, for containerized deployment)
 
 ### Installation
@@ -194,11 +194,11 @@ The dashboard is built with Next.js 14.x, React 18.x, Chart.js for data visualiz
 ## Docker Deployment
 
 The Docker image is optimized for production with enhanced security:
-- Ubuntu 24.04 base image for stability and security
-- **Security-first design**: Creates non-root user early in build process and runs all operations as non-root
+- Ubuntu 24.04 LTS base image for stability and long-term security support
+- **Security-first design**: Creates non-root user (`nextjs`) early in build process and runs all operations as non-root
 - Volta for exact Node.js 22.12.0 and npm 10.9.0 version management (installed as non-root user)
-- **Secure file ownership**: Uses `--chown` flags during COPY operations to ensure proper file permissions
-- Two-stage dependency management: installs all dependencies for build, then prunes dev dependencies
+- **Secure file ownership**: Uses `--chown=nextjs:nodejs` flags during COPY operations to ensure proper file permissions
+- Two-stage dependency management: installs all dependencies for build, then prunes dev dependencies with `npm prune --omit=dev`
 - Clean npm cache to reduce image size
 - Efficient layer caching for faster builds
 
@@ -208,15 +208,14 @@ The Docker image is optimized for production with enhanced security:
 docker build -t socket-server .
 ```
 
-The Docker build process is optimized for production with security best practices:
-- **Non-root execution**: Creates and switches to non-root user (`nextjs`) early in the build process
+The Docker build process follows security best practices and production optimization:
+- **Non-root execution**: Creates and switches to non-root user (`nextjs`) with UID 1001 early in the build process
 - **Secure Volta installation**: Installs Volta as the non-root user to avoid privilege escalation
 - **Proper file ownership**: Uses `--chown=nextjs:nodejs` flags during COPY operations for secure file permissions
-- Installs all dependencies (including dev dependencies) for the build process
-- Builds the application with full dependency access
-- Removes dev dependencies after build with `npm prune --omit=dev` to reduce final image size
-- Cleans npm cache to reduce final image size
-- Leverages Docker layer caching for faster subsequent builds
+- **Dependency optimization**: Installs all dependencies (including dev dependencies) for the build process, then removes dev dependencies after build with `npm prune --omit=dev` to reduce final image size
+- **Cache management**: Cleans npm cache with `npm cache clean --force` to reduce final image size
+- **Layer optimization**: Leverages Docker layer caching by copying package files first for faster subsequent builds
+- **Signal handling**: Uses exec form in CMD for better signal handling in containers
 
 ### Run Container
 
@@ -280,7 +279,7 @@ This project requires specific Node.js (22.12.0) and npm (10.9.0) versions for o
 
 ### Using Volta (Recommended)
 
-Volta provides automatic version switching and ensures consistency across development environments:
+Volta provides automatic version switching and ensures consistency across development environments. The dashboard already has Volta configuration in its package.json:
 
 ```bash
 # Install Volta
@@ -290,7 +289,8 @@ curl https://get.volta.sh | bash
 # Windows
 winget install Volta.Volta
 
-# Pin project versions (run in project directory)
+# Volta will automatically use the pinned versions from dashboard/package.json
+# Or manually pin project versions (run in project directory)
 volta pin node@22.12.0
 volta pin npm@10.9.0
 ```
