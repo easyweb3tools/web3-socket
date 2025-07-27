@@ -1,9 +1,17 @@
-# Use official Node.js image instead of Ubuntu + NVM
-FROM node:22.13.1-alpine
+# Use Ubuntu 24.04 with Node.js
+FROM ubuntu:24.04
+
+# Install Node.js 22.x and npm
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nextjs -u 1001
+RUN groupadd -g 1001 nodejs && \
+    useradd -r -u 1001 -g nodejs nextjs
 
 # Set working directory
 WORKDIR /app
@@ -12,7 +20,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies with clean cache
-RUN npm ci --only=production && \
+RUN npm install --omit=dev && \
     npm cache clean --force
 
 # Copy source code
