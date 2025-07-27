@@ -15,7 +15,7 @@ A real-time communication middleware service based on Socket.IO, providing scala
 
 ## Tech Stack
 
-- **Runtime**: Node.js 22.12.0 with TypeScript 5.3.x (managed via Volta)
+- **Runtime**: Node.js 22.12.0 with TypeScript 5.3.x (version management via Volta recommended)
 - **WebSocket**: Socket.IO 4.7.x with Redis adapter for scaling
 - **HTTP Framework**: Express 4.x with CORS and Helmet security
 - **Database**: Redis 4.x (for horizontal scaling and session management)
@@ -98,8 +98,8 @@ We built web3-socket using a layered architecture approach:
 
 ### Prerequisites
 
-- Node.js 22.12.0 (project uses Volta for exact version management)
-- npm 10.9.0 (automatically managed by Volta)
+- Node.js 22.12.0 (exact version required for compatibility)
+- npm 10.9.0 (exact version required for compatibility)
 - Redis 6.x or higher (for horizontal scaling and session management)
 - [Volta](https://volta.sh/) (recommended for automatic Node.js/npm version management)
 - Docker (optional, for containerized deployment)
@@ -119,7 +119,7 @@ cd socket-server
 npm install
 ```
 
-> **Note**: This project uses [Volta](https://volta.sh/) for Node.js version management. If you have Volta installed, it will automatically use the correct Node.js (22.12.0) and npm (10.9.0) versions specified in `package.json`. If you don't have Volta, make sure you're using the correct versions manually.
+> **Note**: This project requires Node.js 22.12.0 and npm 10.9.0 for optimal compatibility. While [Volta](https://volta.sh/) is recommended for version management, you can also use nvm or install these versions manually. The Docker build uses Volta to ensure exact version consistency in production.
 
 3. Create environment configuration file:
 
@@ -196,15 +196,20 @@ The dashboard is built with Next.js 14.x, React 18.x, Chart.js for data visualiz
 The Docker image is optimized for production with:
 - Ubuntu 24.04 base image for stability and security
 - Volta for exact Node.js 22.12.0 and npm 10.9.0 version management
-- Multi-stage build process for efficient layer caching
-- Streamlined dependency installation with clean npm cache
-- Non-root user execution for enhanced security
+- Optimized build process with production-only dependencies (`--omit=dev`)
+- Clean npm cache to reduce image size
+- Efficient layer caching for faster builds
 
 ### Build Image
 
 ```bash
 docker build -t socket-server .
 ```
+
+The Docker build process is optimized for production:
+- Uses `npm install --omit=dev` to install only production dependencies
+- Cleans npm cache to reduce final image size
+- Leverages Docker layer caching for faster subsequent builds
 
 ### Run Container
 
@@ -264,33 +269,46 @@ docker-compose up -d
 
 ## Version Management
 
-This project uses [Volta](https://volta.sh/) to ensure consistent Node.js and npm versions across all development environments. The versions are pinned in `package.json`:
+This project requires specific Node.js (22.12.0) and npm (10.9.0) versions for optimal compatibility and performance. While you can manage these versions manually, we recommend using [Volta](https://volta.sh/) for automatic version management.
 
-```json
-{
-  "volta": {
-    "node": "22.12.0",
-    "npm": "10.9.0"
-  }
-}
+### Using Volta (Recommended)
+
+Volta provides automatic version switching and ensures consistency across development environments:
+
+```bash
+# Install Volta
+# macOS/Linux
+curl https://get.volta.sh | bash
+
+# Windows
+winget install Volta.Volta
+
+# Pin project versions (run in project directory)
+volta pin node@22.12.0
+volta pin npm@10.9.0
 ```
 
 ### Benefits of Volta
 - **Automatic Version Switching**: Volta automatically switches to the correct Node.js version when you enter the project directory
 - **Team Consistency**: Ensures all team members use the same Node.js and npm versions
 - **CI/CD Integration**: Volta can be used in CI/CD pipelines for consistent builds
+- **Docker Integration**: The Dockerfile uses Volta to ensure exact version consistency in production
 
-### Installing Volta
+### Alternative Version Managers
+
+If you prefer other version managers:
 
 ```bash
-# macOS/Linux
-curl https://get.volta.sh | bash
+# Using nvm
+nvm install 22.12.0
+nvm use 22.12.0
+npm install -g npm@10.9.0
 
-# Windows
-winget install Volta.Volta
+# Using fnm
+fnm install 22.12.0
+fnm use 22.12.0
+npm install -g npm@10.9.0
 ```
-
-After installation, Volta will automatically use the correct versions when you're in the project directory.
 
 ## Project Structure
 

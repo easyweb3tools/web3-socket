@@ -12,6 +12,9 @@ RUN apt-get update && \
 ENV VOLTA_HOME="/root/.volta"
 ENV PATH="$VOLTA_HOME/bin:$PATH"
 
+# Create non-root user for security
+RUN groupadd -g 1001 nodejs && \
+    useradd -r -u 1001 -g nodejs nextjs
 
 # Set working directory
 WORKDIR /app
@@ -20,15 +23,25 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install Node.js and npm versions specified in package.json via Volta
-RUN volta install node@$(node -p "require('./package.json').volta.node") && \
-    volta install npm@$(node -p "require('./package.json').volta.npm")
+RUN volta install node@22.12.0 && \
+    volta install npm@10.9.0
+
+# Install dependencies with clean cache
+RUN npm install --omit=dev && \
+    npm cache clean --force
 
 # Copy source code
 COPY . .
 
-# Install dependencies with clean cache
-RUN npm install
-RUN npm build
+# Build the application
+RUN npm run build
+
+# Change ownership to non-root user
+RUN chown -R nextjs:nodejs /app
+
+# Switch to non-root user
+USER nextjs
+
 # Expose port (adjust if needed)
 EXPOSE 8081
 
