@@ -193,9 +193,11 @@ The dashboard is built with Next.js 14.x, React 18.x, Chart.js for data visualiz
 
 ## Docker Deployment
 
-The Docker image is optimized for production with:
+The Docker image is optimized for production with enhanced security:
 - Ubuntu 24.04 base image for stability and security
-- Volta for exact Node.js 22.12.0 and npm 10.9.0 version management
+- **Security-first design**: Creates non-root user early in build process and runs all operations as non-root
+- Volta for exact Node.js 22.12.0 and npm 10.9.0 version management (installed as non-root user)
+- **Secure file ownership**: Uses `--chown` flags during COPY operations to ensure proper file permissions
 - Two-stage dependency management: installs all dependencies for build, then prunes dev dependencies
 - Clean npm cache to reduce image size
 - Efficient layer caching for faster builds
@@ -206,7 +208,10 @@ The Docker image is optimized for production with:
 docker build -t socket-server .
 ```
 
-The Docker build process is optimized for production:
+The Docker build process is optimized for production with security best practices:
+- **Non-root execution**: Creates and switches to non-root user (`nextjs`) early in the build process
+- **Secure Volta installation**: Installs Volta as the non-root user to avoid privilege escalation
+- **Proper file ownership**: Uses `--chown=nextjs:nodejs` flags during COPY operations for secure file permissions
 - Installs all dependencies (including dev dependencies) for the build process
 - Builds the application with full dependency access
 - Removes dev dependencies after build with `npm prune --omit=dev` to reduce final image size
