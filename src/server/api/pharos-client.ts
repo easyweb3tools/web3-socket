@@ -54,7 +54,7 @@ export class PharosClient {
 
             return response.data.result;
         } catch (error) {
-            this.logger.error(`RPC call failed: ${method}`, { error: error.message, params });
+            this.logger.error(`RPC call failed: ${method}`, error, { params });
             throw error;
         }
     }

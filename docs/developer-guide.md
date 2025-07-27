@@ -15,10 +15,11 @@ This guide provides comprehensive information for developers working on the Sock
 
 ### Prerequisites
 
-- Node.js 16.x or higher
-- npm 7.x or higher
+- Node.js 22.12.0 or higher (project uses Volta for version management)
+- npm 10.9.0 or higher
 - Redis (for multi-instance development)
 - Git
+- [Volta](https://volta.sh/) (recommended for automatic Node.js version management)
 
 ### Installation
 

@@ -1,11 +1,11 @@
 /**
  * Example usage of the Pharos RPC client
  */
-import { Logger } from '../logger';
+import { setupLogger } from '../logger';
 import { initializePharosClient } from './index';
 
 // Initialize logger
-const logger = new Logger();
+const logger = setupLogger();
 
 // Initialize Pharos client
 const pharosClient = initializePharosClient(logger);

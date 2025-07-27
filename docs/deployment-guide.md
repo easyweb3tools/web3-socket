@@ -32,10 +32,11 @@ This document provides comprehensive instructions for deploying, configuring, an
 
 Before installing the Socket Server, ensure you have the following prerequisites:
 
-- Node.js 16.x or higher
-- npm 7.x or higher
+- Node.js 22.12.0 or higher (project uses Volta for version management)
+- npm 10.9.0 or higher
 - Redis 6.x or higher (for multi-instance deployments)
 - Access to the Go backend service
+- [Volta](https://volta.sh/) (recommended for consistent Node.js version management)
 
 ### Standard Installation
 

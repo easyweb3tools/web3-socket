@@ -4,25 +4,27 @@ A real-time communication middleware service based on Socket.IO, providing scala
 
 ## Features
 
-- Real-time bidirectional communication
-- Horizontal scaling support (via Redis adapter)
-- JWT authentication
-- API key protected HTTP endpoints
-- Comprehensive monitoring and metrics collection
-- Built-in management dashboard
-- High-performance message batching
-- Automatic load balancing
-- Comprehensive logging
+- **Real-time Communication**: Bidirectional WebSocket messaging with Socket.IO
+- **Horizontal Scaling**: Redis adapter support for multi-instance deployment
+- **Security**: JWT authentication for WebSocket connections, API key protection for HTTP endpoints
+- **Performance**: High-performance message batching and connection management
+- **Monitoring**: Comprehensive metrics collection (Prometheus), structured logging (Pino)
+- **Dashboard**: Real-time monitoring dashboard built with Next.js
+- **Production Ready**: Docker optimization, health checks, graceful shutdowns
+- **Developer Experience**: TypeScript support, comprehensive testing, extensive documentation
 
 ## Tech Stack
 
-- Node.js
-- TypeScript
-- Socket.IO
-- Express
-- Redis
-- Prometheus (metrics)
-- Next.js (dashboard)
+- **Runtime**: Node.js 22.12.0 with TypeScript 5.3.x (managed via Volta)
+- **WebSocket**: Socket.IO 4.7.x with Redis adapter for scaling
+- **HTTP Framework**: Express 4.x with CORS and Helmet security
+- **Database**: Redis 4.x (for horizontal scaling and session management)
+- **Logging**: Pino with structured logging and log rotation
+- **Metrics**: Prometheus client with custom metrics collection
+- **Dashboard**: Next.js 14.x with React 18.x, Chart.js, and Tailwind CSS
+- **Security**: JWT authentication, API key protection, input validation, sanitization
+- **Container**: Docker with Ubuntu 24.04 and Volta for version management
+- **Testing**: Jest with comprehensive unit, integration, load, and security test suites
 
 ## Inspiration
 
@@ -50,7 +52,7 @@ We built web3-socket using a layered architecture approach:
 4. **Security Implementation**: Integrated JWT authentication for client connections and API key protection for HTTP endpoints
 5. **Monitoring & Metrics**: Built comprehensive logging with Winston and metrics collection compatible with Prometheus
 6. **Dashboard Development**: Created a Next.js-based monitoring dashboard for real-time system visualization
-7. **Docker Optimization**: Implemented multi-stage Docker builds with Alpine Linux for minimal container size and security
+7. **Docker Optimization**: Implemented optimized Docker builds with Ubuntu 24.04 for reliability and security
 
 ## Challenges we ran into
 
@@ -68,7 +70,7 @@ We built web3-socket using a layered architecture approach:
 - **Comprehensive Security**: Built robust authentication and authorization system with JWT tokens and API key protection
 - **Developer Experience**: Created intuitive APIs and comprehensive documentation that makes integration straightforward
 - **Production Ready**: Implemented complete monitoring, logging, and metrics collection suitable for production environments
-- **Container Optimization**: Reduced Docker image size by 80% through Alpine Linux and multi-stage builds
+- **Container Optimization**: Optimized Docker builds with Ubuntu 24.04 for production deployment
 - **Real-time Dashboard**: Built an interactive monitoring dashboard that provides instant visibility into system health
 
 ## What we learned
@@ -96,9 +98,11 @@ We built web3-socket using a layered architecture approach:
 
 ### Prerequisites
 
-- Node.js 16.x or higher
-- npm 7.x or higher
-- Redis 6.x or higher (for multi-instance deployment)
+- Node.js 22.12.0 (project uses Volta for exact version management)
+- npm 10.9.0 (automatically managed by Volta)
+- Redis 6.x or higher (for horizontal scaling and session management)
+- [Volta](https://volta.sh/) (recommended for automatic Node.js/npm version management)
+- Docker (optional, for containerized deployment)
 
 ### Installation
 
@@ -114,6 +118,8 @@ cd socket-server
 ```bash
 npm install
 ```
+
+> **Note**: This project uses [Volta](https://volta.sh/) for Node.js version management. If you have Volta installed, it will automatically use the correct Node.js (22.12.0) and npm (10.9.0) versions specified in `package.json`. If you don't have Volta, make sure you're using the correct versions manually.
 
 3. Create environment configuration file:
 
@@ -144,30 +150,55 @@ npm start
 
 ### Running Tests
 
+The project includes comprehensive test suites with high coverage:
+
 ```bash
-# Run unit tests
+# Run unit tests (handlers, middleware, utilities)
 npm test
 
-# Run integration tests
+# Run integration tests (end-to-end API and WebSocket testing)
 npm run test:integration
 
-# Run load tests
+# Run load tests (performance and throughput testing)
 npm run test:load
 
-# Run security tests
+# Run security tests (authentication, authorization, input validation)
 npm run test:security
 
-# Run all tests
+# Run all test suites
 npm run test:all
 ```
 
+**Test Coverage:**
+- Unit tests: Core functionality, handlers, middleware, utilities
+- Integration tests: API endpoints, WebSocket connections, message flow
+- Load tests: Connection throughput, message latency, concurrent users
+- Security tests: Authentication bypass, input validation, authorization
+
 ### Start Dashboard
+
+The monitoring dashboard provides real-time insights into connections, metrics, and system health:
 
 ```bash
 npm run dashboard
 ```
 
+The dashboard is built with Next.js 14.x, React 18.x, Chart.js for data visualization, and Tailwind CSS for styling. Access it at `http://localhost:3000` (default Next.js port).
+
+**Dashboard Features:**
+- Real-time connection statistics and metrics
+- Interactive charts for message throughput and latency
+- Connection logs and system health monitoring
+- Room management and user session tracking
+
 ## Docker Deployment
+
+The Docker image is optimized for production with:
+- Ubuntu 24.04 base image for stability and security
+- Volta for exact Node.js 22.12.0 and npm 10.9.0 version management
+- Multi-stage build process for efficient layer caching
+- Streamlined dependency installation with clean npm cache
+- Non-root user execution for enhanced security
 
 ### Build Image
 
@@ -193,13 +224,12 @@ docker run -d --name socket-server \
 Create a `docker-compose.yml` file:
 
 ```yaml
-version: '3'
+version: '3.8'
 services:
   socket-server:
     build: .
     ports:
       - "8081:8081"
-      - "9090:9090"
     environment:
       - NODE_ENV=production
       - PORT=8081
@@ -208,17 +238,19 @@ services:
       - API_KEY=your-api-key
       - REDIS_ENABLED=true
       - REDIS_HOST=redis
+      - REDIS_PORT=6379
     restart: unless-stopped
     depends_on:
       - redis
   
   redis:
-    image: redis:6-alpine
+    image: redis:7-alpine
     ports:
       - "6379:6379"
     volumes:
       - redis-data:/data
     restart: unless-stopped
+    command: redis-server --appendonly yes
 
 volumes:
   redis-data:
@@ -228,6 +260,68 @@ Run:
 
 ```bash
 docker-compose up -d
+```
+
+## Version Management
+
+This project uses [Volta](https://volta.sh/) to ensure consistent Node.js and npm versions across all development environments. The versions are pinned in `package.json`:
+
+```json
+{
+  "volta": {
+    "node": "22.12.0",
+    "npm": "10.9.0"
+  }
+}
+```
+
+### Benefits of Volta
+- **Automatic Version Switching**: Volta automatically switches to the correct Node.js version when you enter the project directory
+- **Team Consistency**: Ensures all team members use the same Node.js and npm versions
+- **CI/CD Integration**: Volta can be used in CI/CD pipelines for consistent builds
+
+### Installing Volta
+
+```bash
+# macOS/Linux
+curl https://get.volta.sh | bash
+
+# Windows
+winget install Volta.Volta
+```
+
+After installation, Volta will automatically use the correct versions when you're in the project directory.
+
+## Project Structure
+
+The project follows a modular architecture with clear separation of concerns:
+
+```
+socket-server/
+├── src/
+│   ├── server/
+│   │   ├── handlers/          # Socket.IO event handlers
+│   │   ├── middleware/        # Authentication and validation
+│   │   ├── utils/             # Utility functions and helpers
+│   │   ├── api/               # HTTP API endpoints and backend integration
+│   │   ├── adapters/          # Redis adapter for horizontal scaling
+│   │   ├── errors/            # Error handling and custom error types
+│   │   └── index.ts           # Main server entry point
+│   ├── integration-tests/     # Integration test suites
+│   ├── load-tests/           # Performance and load tests
+│   └── security-tests/       # Security validation tests
+├── dashboard/                # Next.js 14.x monitoring dashboard
+│   ├── components/           # React 18.x components with TypeScript
+│   ├── pages/               # Next.js pages (index, connections, logs, etc.)
+│   ├── lib/                 # Dashboard API utilities
+│   └── styles/              # Tailwind CSS styling
+├── docs/                    # Comprehensive documentation
+│   ├── api/                 # API documentation
+│   ├── architecture.md      # System architecture
+│   ├── deployment-guide.md  # Deployment instructions
+│   └── developer-guide.md   # Development setup
+├── logs/                    # Application logs with rotation
+└── dist/                    # Compiled TypeScript output
 ```
 
 ## Configuration
@@ -321,12 +415,29 @@ GET /api/stats/connections
 ```
 POST /api/message
 Content-Type: application/json
+X-API-Key: your-api-key
 
 {
   "userId": "user-123",
   "event": "notification",
   "data": {
     "message": "Hello from API"
+  }
+}
+```
+
+#### Broadcast Message to Room
+
+```
+POST /api/room/broadcast
+Content-Type: application/json
+X-API-Key: your-api-key
+
+{
+  "roomId": "room-456",
+  "event": "announcement",
+  "data": {
+    "message": "Room announcement"
   }
 }
 ```
@@ -343,15 +454,19 @@ Prometheus metrics are available at the `/metrics` endpoint.
 
 Key metrics:
 
-- `socket_connections_total`: Total connections
+- `socket_connections_total`: Total connections established
 - `socket_connections_active`: Current active connections
-- `socket_messages_sent_total`: Total messages sent
-- `socket_messages_received_total`: Total messages received
-- `socket_errors_total`: Total errors
+- `socket_messages_sent_total`: Total messages sent to clients
+- `socket_messages_received_total`: Total messages received from clients
+- `socket_rooms_total`: Total number of active rooms
+- `socket_errors_total`: Total errors encountered
+- `http_requests_total`: HTTP API request count
+- `http_request_duration_seconds`: HTTP request latency
+- `nodejs_eventloop_lag_seconds`: Event loop lag monitoring
 
 ### Log Management
 
-Log configuration:
+The server uses Pino for high-performance structured logging with automatic log rotation:
 
 ```
 LOG_LEVEL=info
@@ -360,6 +475,8 @@ LOG_DIR=logs
 LOG_MAX_SIZE=10m
 LOG_MAX_FILES=7
 ```
+
+Logs include PII redaction and structured JSON format for easy parsing and analysis.
 
 ## Contributing
 

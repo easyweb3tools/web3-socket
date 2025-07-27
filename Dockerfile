@@ -1,17 +1,17 @@
-# Use Ubuntu 24.04 with Node.js
+# Use Ubuntu 24.04 as base
 FROM ubuntu:24.04
 
-# Install Node.js 22.x and npm
+# Install Volta
 RUN apt-get update && \
-    apt-get install -y curl && \
-    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
-    apt-get install -y nodejs && \
+    apt-get install -y curl bash && \
+    curl https://get.volta.sh | bash && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Create non-root user for security
-RUN groupadd -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs nextjs
+# Add Volta to PATH
+ENV VOLTA_HOME="/root/.volta"
+ENV PATH="$VOLTA_HOME/bin:$PATH"
+
 
 # Set working directory
 WORKDIR /app
@@ -19,19 +19,16 @@ WORKDIR /app
 # Copy package files first for better layer caching
 COPY package*.json ./
 
-# Install dependencies with clean cache
-RUN npm install --omit=dev && \
-    npm cache clean --force
+# Install Node.js and npm versions specified in package.json via Volta
+RUN volta install node@$(node -p "require('./package.json').volta.node") && \
+    volta install npm@$(node -p "require('./package.json').volta.npm")
 
 # Copy source code
 COPY . .
 
-# Change ownership to non-root user
-RUN chown -R nextjs:nodejs /app
-
-# Switch to non-root user
-USER nextjs
-
+# Install dependencies with clean cache
+RUN npm install
+RUN npm build
 # Expose port (adjust if needed)
 EXPOSE 8081
 
