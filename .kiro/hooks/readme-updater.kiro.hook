@@ -1,0 +1,22 @@
+{
+  "enabled": true,
+  "name": "README Updater",
+  "description": "Automatically keeps README.md up to date by monitoring changes to key project files like package.json, source code, documentation, and configuration files",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "package.json",
+      "src/**/*.ts",
+      "docs/**/*.md",
+      "dashboard/package.json",
+      "tsconfig.json",
+      "Dockerfile",
+      ".env.example"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "The project files have been updated. Please review the current README.md and update it to reflect any changes in the project structure, features, dependencies, or setup instructions. Focus on keeping the documentation accurate and helpful for new users and contributors."
+  }
+}
