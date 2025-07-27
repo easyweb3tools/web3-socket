@@ -196,7 +196,7 @@ The dashboard is built with Next.js 14.x, React 18.x, Chart.js for data visualiz
 The Docker image is optimized for production with:
 - Ubuntu 24.04 base image for stability and security
 - Volta for exact Node.js 22.12.0 and npm 10.9.0 version management
-- Optimized build process with production-only dependencies (`--omit=dev`)
+- Two-stage dependency management: installs all dependencies for build, then prunes dev dependencies
 - Clean npm cache to reduce image size
 - Efficient layer caching for faster builds
 
@@ -207,7 +207,9 @@ docker build -t socket-server .
 ```
 
 The Docker build process is optimized for production:
-- Uses `npm install --omit=dev` to install only production dependencies
+- Installs all dependencies (including dev dependencies) for the build process
+- Builds the application with full dependency access
+- Removes dev dependencies after build with `npm prune --omit=dev` to reduce final image size
 - Cleans npm cache to reduce final image size
 - Leverages Docker layer caching for faster subsequent builds
 
