@@ -4,41 +4,16 @@ import { Server as ServerIO } from 'socket.io'
 import jwt from 'jsonwebtoken'
 import { v4 as uuidv4 } from 'uuid'
 import { logger } from '../logger'
+import { ConnectedUser, Room, MessageData } from './types'
 
 export interface SocketIOServer extends NetServer {
   io?: ServerIO
 }
 
 export interface SocketIOResponse extends NextApiResponse {
-  socket: {
+  socket: NextApiResponse['socket'] & {
     server: SocketIOServer
   }
-}
-
-export interface ConnectedUser {
-  id: string
-  socketId: string
-  username?: string
-  connectedAt: Date
-  lastActivity: Date
-  rooms: string[]
-}
-
-export interface Room {
-  id: string
-  name: string
-  createdAt: Date
-  userCount: number
-  users: string[]
-}
-
-export interface MessageData {
-  id: string
-  userId: string
-  username?: string
-  content: string
-  timestamp: Date
-  room?: string
 }
 
 // Use Node.js global object to ensure true singleton

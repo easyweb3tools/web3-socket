@@ -1,4 +1,28 @@
-import { ConnectedUser, Room, MessageData } from './socketService'
+export interface ConnectedUser {
+  id: string
+  socketId: string
+  username?: string
+  connectedAt: Date
+  lastActivity: Date
+  rooms: string[]
+}
+
+export interface Room {
+  id: string
+  name: string
+  createdAt: Date
+  userCount: number
+  users: string[]
+}
+
+export interface MessageData {
+  id: string
+  userId: string
+  username?: string
+  content: string
+  timestamp: Date
+  room?: string
+}
 
 export interface ServerToClientEvents {
   authenticated: (data: { success: boolean; userId?: string; error?: string }) => void

@@ -68,7 +68,7 @@ export function useSocket(options: UseSocketOptions = {}) {
       if (data.success && data.userId) {
         setState(prev => ({ 
           ...prev, 
-          currentUser: { id: data.userId, username } 
+          currentUser: { id: data.userId!, username } 
         }))
         console.log('Authentication successful:', data.userId)
       } else {
