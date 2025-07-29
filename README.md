@@ -1,516 +1,206 @@
-# Socket Server
+# Web3 Socket - 实时通信服务
 
-A real-time communication middleware service based on Socket.IO, providing scalable WebSocket connection management and message delivery capabilities.
+一个基于 Next.js 和 Socket.IO 的全栈实时通信项目，提供完整的 WebSocket 服务和管理 Dashboard。
 
-## Features
+## ✨ 特性
 
-- **Real-time Communication**: Bidirectional WebSocket messaging with Socket.IO
-- **Horizontal Scaling**: Redis adapter support for multi-instance deployment
-- **Security**: JWT authentication for WebSocket connections, API key protection for HTTP endpoints
-- **Performance**: High-performance message batching and connection management
-- **Monitoring**: Comprehensive metrics collection (Prometheus), structured logging (Pino)
-- **Dashboard**: Real-time monitoring dashboard built with Next.js
-- **Production Ready**: Docker optimization, health checks, graceful shutdowns
-- **Developer Experience**: TypeScript support, comprehensive testing, extensive documentation
+- 🚀 **实时通信**: 基于 Socket.IO 的双向实时通信
+- 📊 **管理面板**: 完整的连接、房间、日志管理界面
+- 🔐 **认证系统**: 支持 JWT 和匿名用户认证
+- 🏠 **房间管理**: 支持多房间聊天和私聊
+- 📝 **日志系统**: 完整的事件日志记录和查看
+- 📈 **监控指标**: 实时系统状态和性能监控
+- 🎨 **现代UI**: 基于 Tailwind CSS 的响应式设计
 
-## Tech Stack
+## 🛠️ 技术栈
 
-- **Runtime**: Node.js 22.12.0 with TypeScript 5.3.x (version management via Volta)
-- **WebSocket**: Socket.IO 4.7.x with Redis adapter 8.2.x for scaling
-- **HTTP Framework**: Express 4.18.x with CORS and Helmet security
-- **Database**: Redis 4.6.x (for horizontal scaling and session management)
-- **Logging**: Pino 8.x with structured logging and log rotation
-- **Metrics**: Prometheus client 15.x with custom metrics collection
-- **Dashboard**: Next.js 14.x with React 18.x, Chart.js 4.x, and Tailwind CSS 3.x
-- **Security**: JWT authentication, API key protection, input validation, sanitization
-- **Container**: Docker with Ubuntu 24.04 and Volta for exact version management
-- **Testing**: Jest 29.x with comprehensive unit, integration, load, and security test suites
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Socket.IO, Node.js
+- **Authentication**: JWT
+- **Real-time**: Socket.IO v4.7.5
 
-## Inspiration
+## 📁 项目结构
 
-The inspiration for web3-socket came from the need to simplify real-time communication in Web3 applications. Traditional WebSocket implementations require complex backend handling, making it difficult for Go backend services to manage real-time features efficiently. We wanted to create a middleware solution that acts as a bridge between browser clients and backend services, reducing complexity while maintaining high performance and scalability.
-
-## What it does
-
-Web3-socket is a real-time communication middleware service that:
-
-- **Handles WebSocket Connections**: Manages multiple client connections using Socket.IO protocol
-- **User Authentication & Management**: Authenticates users via JWT tokens and manages connection states
-- **Message Routing**: Routes messages between browser clients and Go backend services seamlessly
-- **Room-based Broadcasting**: Supports efficient group messaging through room management
-- **HTTP API Integration**: Provides REST endpoints for backend services to push messages to clients
-- **Real-time Monitoring**: Includes a comprehensive dashboard for monitoring connections, metrics, and system health
-- **Horizontal Scaling**: Supports multi-instance deployment with Redis adapter for high availability
-
-## How we built it
-
-We built web3-socket using a layered architecture approach:
-
-1. **Core Technology Stack**: Built on Node.js with TypeScript for type safety, using Socket.IO for WebSocket handling and Express for HTTP APIs
-2. **Modular Design**: Implemented separate layers for Socket.IO handling, core business logic, HTTP APIs, and event processing
-3. **Redis Integration**: Added Redis adapter to enable horizontal scaling and shared state management across multiple instances
-4. **Security Implementation**: Integrated JWT authentication for client connections and API key protection for HTTP endpoints
-5. **Monitoring & Metrics**: Built comprehensive logging with Winston and metrics collection compatible with Prometheus
-6. **Dashboard Development**: Created a Next.js-based monitoring dashboard for real-time system visualization
-7. **Docker Optimization**: Implemented optimized Docker builds with Ubuntu 24.04 for reliability and security
-
-## Challenges we ran into
-
-- **Connection State Management**: Maintaining consistent user connection states across multiple server instances required careful Redis adapter implementation
-- **Message Routing Complexity**: Ensuring reliable message delivery between clients and backend while handling connection failures and reconnections
-- **Authentication Flow**: Implementing secure JWT-based authentication that works seamlessly with Socket.IO's connection lifecycle
-- **Performance Optimization**: Balancing real-time responsiveness with system resource usage, especially under high connection loads
-- **Error Handling**: Building resilient error handling that gracefully manages network failures, backend unavailability, and client disconnections
-- **Horizontal Scaling**: Designing stateless architecture that maintains message consistency across distributed instances
-
-## Accomplishments that we're proud of
-
-- **High Performance**: Achieved efficient handling of thousands of concurrent WebSocket connections with minimal latency
-- **Scalable Architecture**: Successfully implemented horizontal scaling with Redis adapter, supporting multi-instance deployments
-- **Comprehensive Security**: Built robust authentication and authorization system with JWT tokens and API key protection
-- **Developer Experience**: Created intuitive APIs and comprehensive documentation that makes integration straightforward
-- **Production Ready**: Implemented complete monitoring, logging, and metrics collection suitable for production environments
-- **Container Optimization**: Optimized Docker builds with Ubuntu 24.04 for production deployment
-- **Real-time Dashboard**: Built an interactive monitoring dashboard that provides instant visibility into system health
-
-## What we learned
-
-- **WebSocket Scaling Patterns**: Gained deep understanding of WebSocket connection management and scaling strategies using Redis pub/sub
-- **Middleware Architecture**: Learned effective patterns for building middleware services that bridge different technology stacks
-- **Performance Monitoring**: Discovered the importance of comprehensive metrics collection and real-time monitoring for distributed systems
-- **Security Best Practices**: Implemented security-first design with proper authentication, input validation, and data protection
-- **Docker Optimization**: Mastered container optimization techniques for production deployment efficiency
-- **Event-Driven Design**: Applied event-driven architecture patterns for loose coupling and better maintainability
-- **Load Testing**: Learned to use tools like Artillery for comprehensive load testing and performance validation
-
-## What's next for web3-socket
-
-- **Message Queue Integration**: Add support for Apache Kafka and RabbitMQ for enhanced message durability and processing
-- **Advanced Analytics**: Implement real-time analytics dashboard with connection patterns, message flow visualization, and performance insights
-- **Multi-Protocol Support**: Extend beyond Socket.IO to support WebRTC for peer-to-peer communication and other real-time protocols
-- **Auto-Scaling**: Develop intelligent auto-scaling based on connection load and system metrics
-- **Enhanced Security**: Add OAuth2 integration, rate limiting per user, and advanced threat detection
-- **Plugin Architecture**: Create a plugin system for custom event handlers and middleware extensions
-- **Cloud Native Features**: Add Kubernetes operators, service mesh integration, and cloud-native monitoring
-- **GraphQL Subscriptions**: Support GraphQL subscription protocol for real-time data synchronization
-
-## Quick Start
-
-### Prerequisites
-
-- Node.js 22.12.0 (exact version required for compatibility)
-- npm 10.9.0 (exact version required for compatibility)
-- Redis 4.6.x or higher (for horizontal scaling and session management)
-- [Volta](https://volta.sh/) (for automatic Node.js/npm version management)
-- Docker (optional, for containerized deployment)
-
-### Installation
-
-1. Clone the repository:
-
-```bash
-git clone https://github.com/your-org/socket-server.git
-cd socket-server
+```
+web3-socket/
+├── src/
+│   ├── app/                          # Next.js App Router
+│   │   ├── api/                      # API Routes
+│   │   │   ├── socket/               # Socket.IO 管理端点
+│   │   │   ├── status/               # 服务状态 API
+│   │   │   ├── connections/          # 连接管理 API
+│   │   │   ├── rooms/                # 房间管理 API
+│   │   │   ├── push/                 # 消息推送 API
+│   │   │   ├── broadcast/            # 广播消息 API
+│   │   │   └── logs/                 # 日志查看 API
+│   │   ├── dashboard/                # Dashboard 页面
+│   │   │   ├── connections/          # 连接管理页面
+│   │   │   ├── rooms/                # 房间管理页面
+│   │   │   ├── logs/                 # 日志查看页面
+│   │   │   └── metrics/              # 指标监控页面
+│   │   ├── layout.tsx                # 根布局
+│   │   └── page.tsx                  # 首页
+│   ├── components/                   # React 组件
+│   │   └── dashboard/                # Dashboard 组件
+│   ├── lib/                          # 工具库和服务
+│   │   ├── socket/                   # Socket.IO 服务端逻辑
+│   │   └── logger/                   # 日志服务
+│   ├── hooks/                        # React Hooks
+│   │   └── useSocket.ts              # Socket.IO 客户端 Hook
+│   └── types/                        # TypeScript 类型定义
+├── pages/api/socket/                 # Socket.IO 初始化
+└── public/                           # 静态资源
 ```
 
-2. Install dependencies:
+## 🚀 快速开始
+
+### 1. 安装依赖
 
 ```bash
 npm install
 ```
 
-> **Note**: This project requires Node.js 22.12.0 and npm 10.9.0 for optimal compatibility. While [Volta](https://volta.sh/) is recommended for version management, you can also use nvm or install these versions manually. The Docker build uses Volta to ensure exact version consistency in production.
-
-3. Create environment configuration file:
-
-```bash
-cp .env.example .env
-```
-
-4. Edit the `.env` file and set the necessary configuration:
-
-```
-JWT_SECRET=your_jwt_secret_key_here
-API_KEY=your_api_key_here
-BACKEND_URL=http://your-backend-service-url
-```
-
-### Development Mode
+### 2. 启动开发服务器
 
 ```bash
 npm run dev
 ```
 
-### Production Mode
+### 3. 访问应用
 
+- 首页: http://localhost:3000
+- 管理面板: http://localhost:3000/dashboard
+
+## 📡 API 接口
+
+### 服务状态
+- `GET /api/status` - 获取服务器运行状态
+
+### 连接管理
+- `GET /api/connections` - 获取所有在线连接
+- `DELETE /api/connections?socketId=xxx` - 断开指定连接
+
+### 房间管理
+- `GET /api/rooms` - 获取所有活跃房间
+
+### 消息推送
+- `POST /api/push` - 发送消息到指定房间或全局
+- `GET /api/push?room=xxx&limit=20` - 获取消息历史
+
+### 广播通知
+- `POST /api/broadcast` - 广播系统通知
+
+### 日志管理
+- `GET /api/logs?level=INFO&limit=100` - 获取系统日志
+- `DELETE /api/logs` - 清空日志
+
+## 🔌 Socket.IO 事件
+
+### 客户端发送事件
+- `authenticate` - 用户认证
+- `join_room` - 加入房间
+- `leave_room` - 离开房间
+- `send_message` - 发送消息
+- `get_users` - 获取在线用户列表
+- `get_rooms` - 获取房间列表
+
+### 服务端发送事件
+- `authenticated` - 认证结果
+- `joined_room` - 加入房间成功
+- `user_joined` - 用户加入房间
+- `user_left` - 用户离开房间
+- `new_message` - 新消息
+- `users_list` - 用户列表
+- `rooms_list` - 房间列表
+- `user_count_updated` - 在线用户数更新
+- `notification` - 系统通知
+
+## 🎯 使用示例
+
+### 基本连接和聊天
+
+```typescript
+import { useSocket } from '@/hooks/useSocket'
+
+function ChatApp() {
+  const { connected, sendMessage, messages } = useSocket({
+    username: 'testuser',
+    autoConnect: true
+  })
+
+  const handleSend = () => {
+    sendMessage('Hello World!')
+  }
+
+  return (
+    <div>
+      <div>Status: {connected ? 'Connected' : 'Disconnected'}</div>
+      <button onClick={handleSend}>Send Message</button>
+      {messages.map(msg => (
+        <div key={msg.id}>{msg.content}</div>
+      ))}
+    </div>
+  )
+}
+```
+
+### 房间聊天
+
+```typescript
+const { joinRoom, leaveRoom, sendMessage } = useSocket()
+
+// 加入房间
+joinRoom('general')
+
+// 发送房间消息
+sendMessage('Hello room!', 'general')
+
+// 离开房间
+leaveRoom('general')
+```
+
+## 🔧 配置
+
+### 环境变量
+
+```env
+JWT_SECRET=your-secret-key
+```
+
+### Socket.IO 配置
+
+Socket.IO 服务器在 `/api/socket/io` 路径下运行，支持跨域访问。
+
+## 📈 监控和日志
+
+- **实时监控**: Dashboard 提供实时的连接数、房间数、消息统计
+- **日志系统**: 记录所有连接、断开、消息发送等事件
+- **性能指标**: 系统运行时间、内存使用等信息
+
+## 🚀 部署
+
+### 开发环境
+```bash
+npm run dev
+```
+
+### 生产构建
 ```bash
 npm run build
 npm start
 ```
 
-### Running Tests
+## 🤝 贡献
 
-The project includes comprehensive test suites with high coverage:
+欢迎提交 Issues 和 Pull Requests！
 
-```bash
-# Run unit tests (handlers, middleware, utilities)
-npm test
+## 📄 许可证
 
-# Run integration tests (end-to-end API and WebSocket testing)
-npm run test:integration
+MIT License
 
-# Run load tests (performance and throughput testing)
-npm run test:load
+## 🙏 致谢
 
-# Run security tests (authentication, authorization, input validation)
-npm run test:security
-
-# Run all test suites
-npm run test:all
-```
-
-**Test Coverage:**
-- Unit tests: Core functionality, handlers, middleware, utilities
-- Integration tests: API endpoints, WebSocket connections, message flow
-- Load tests: Connection throughput, message latency, concurrent users
-- Security tests: Authentication bypass, input validation, authorization
-
-### Start Dashboard
-
-The monitoring dashboard provides real-time insights into connections, metrics, and system health:
-
-```bash
-npm run dashboard
-```
-
-The dashboard is built with Next.js 14.x, React 18.x, Chart.js for data visualization, and Tailwind CSS for styling. Access it at `http://localhost:3000` (default Next.js port).
-
-**Dashboard Features:**
-- Real-time connection statistics and metrics
-- Interactive charts for message throughput and latency
-- Connection logs and system health monitoring
-- Room management and user session tracking
-
-## Docker Deployment
-
-The Docker image is optimized for production with enhanced security:
-- Ubuntu 24.04 LTS base image for stability and long-term security support
-- **Security-first design**: Creates non-root user (`nextjs`) early in build process and runs all operations as non-root
-- Volta for exact Node.js 22.12.0 and npm 10.9.0 version management (installed as non-root user)
-- **Secure file ownership**: Uses `--chown=nextjs:nodejs` flags during COPY operations to ensure proper file permissions
-- Two-stage dependency management: installs all dependencies for build, then prunes dev dependencies with `npm prune --omit=dev`
-- Clean npm cache to reduce image size
-- Efficient layer caching for faster builds
-
-### Build Image
-
-```bash
-docker build -t socket-server .
-```
-
-The Docker build process follows security best practices and production optimization:
-- **Non-root execution**: Creates and switches to non-root user (`nextjs`) with UID 1001 early in the build process
-- **Secure Volta installation**: Installs Volta as the non-root user to avoid privilege escalation
-- **Proper file ownership**: Uses `--chown=nextjs:nodejs` flags during COPY operations for secure file permissions
-- **Dependency optimization**: Installs all dependencies (including dev dependencies) for the build process, then removes dev dependencies after build with `npm prune --omit=dev` to reduce final image size
-- **Cache management**: Cleans npm cache with `npm cache clean --force` to reduce final image size
-- **Layer optimization**: Leverages Docker layer caching by copying package files first for faster subsequent builds
-- **Signal handling**: Uses exec form in CMD for better signal handling in containers
-
-### Run Container
-
-```bash
-docker run -d --name socket-server \
-  -p 8081:8081 \
-  -e NODE_ENV=production \
-  -e PORT=8081 \
-  -e BACKEND_URL=http://your-backend-url \
-  -e JWT_SECRET=your-jwt-secret \
-  -e API_KEY=your-api-key \
-  socket-server
-```
-
-### Using Docker Compose
-
-Create a `docker-compose.yml` file:
-
-```yaml
-version: '3.8'
-services:
-  socket-server:
-    build: .
-    ports:
-      - "8081:8081"
-    environment:
-      - NODE_ENV=production
-      - PORT=8081
-      - BACKEND_URL=http://your-backend-url
-      - JWT_SECRET=your-jwt-secret
-      - API_KEY=your-api-key
-      - REDIS_ENABLED=true
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-    restart: unless-stopped
-    depends_on:
-      - redis
-  
-  redis:
-    image: redis:7-alpine
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis-data:/data
-    restart: unless-stopped
-    command: redis-server --appendonly yes
-
-volumes:
-  redis-data:
-```
-
-Run:
-
-```bash
-docker-compose up -d
-```
-
-## Version Management
-
-This project requires specific Node.js (22.12.0) and npm (10.9.0) versions for optimal compatibility and performance. While you can manage these versions manually, we recommend using [Volta](https://volta.sh/) for automatic version management.
-
-### Using Volta (Recommended)
-
-Volta provides automatic version switching and ensures consistency across development environments. The dashboard already has Volta configuration in its package.json:
-
-```bash
-# Install Volta
-# macOS/Linux
-curl https://get.volta.sh | bash
-
-# Windows
-winget install Volta.Volta
-
-# Volta will automatically use the pinned versions from dashboard/package.json
-# Or manually pin project versions (run in project directory)
-volta pin node@22.12.0
-volta pin npm@10.9.0
-```
-
-### Benefits of Volta
-- **Automatic Version Switching**: Volta automatically switches to the correct Node.js version when you enter the project directory
-- **Team Consistency**: Ensures all team members use the same Node.js and npm versions
-- **CI/CD Integration**: Volta can be used in CI/CD pipelines for consistent builds
-- **Docker Integration**: The Dockerfile uses Volta to ensure exact version consistency in production
-
-### Alternative Version Managers
-
-If you prefer other version managers:
-
-```bash
-# Using nvm
-nvm install 22.12.0
-nvm use 22.12.0
-npm install -g npm@10.9.0
-
-# Using fnm
-fnm install 22.12.0
-fnm use 22.12.0
-npm install -g npm@10.9.0
-```
-
-## Project Structure
-
-The project follows a modular architecture with clear separation of concerns:
-
-```
-socket-server/
-├── src/
-│   ├── server/
-│   │   ├── handlers/          # Socket.IO event handlers
-│   │   ├── middleware/        # Authentication and validation
-│   │   ├── utils/             # Utility functions and helpers
-│   │   ├── api/               # HTTP API endpoints and backend integration
-│   │   ├── adapters/          # Redis adapter for horizontal scaling
-│   │   ├── errors/            # Error handling and custom error types
-│   │   └── index.ts           # Main server entry point
-│   ├── integration-tests/     # Integration test suites
-│   ├── load-tests/           # Performance and load tests
-│   └── security-tests/       # Security validation tests
-├── dashboard/                # Next.js 14.x monitoring dashboard
-│   ├── components/           # React 18.x components with TypeScript
-│   ├── pages/               # Next.js pages (index, connections, logs, etc.)
-│   ├── lib/                 # Dashboard API utilities
-│   └── styles/              # Tailwind CSS styling
-├── docs/                    # Comprehensive documentation
-│   ├── api/                 # API documentation
-│   ├── architecture.md      # System architecture
-│   ├── deployment-guide.md  # Deployment instructions
-│   └── developer-guide.md   # Development setup
-├── logs/                    # Application logs with rotation
-└── dist/                    # Compiled TypeScript output
-```
-
-## Configuration
-
-### Environment Variables
-
-| Variable | Description | Default | Required |
-|----------|-------------|---------|----------|
-| `NODE_ENV` | Environment (development, production, test) | `development` | No |
-| `PORT` | HTTP and Socket.IO server port | `8081` | No |
-| `BACKEND_URL` | Backend service URL | - | Yes |
-| `JWT_SECRET` | JWT verification secret | - | Yes |
-| `API_KEY` | API key for HTTP endpoints | - | Yes |
-| `CORS_ORIGIN` | Allowed CORS origins (comma-separated) | `*` | No |
-| `LOG_LEVEL` | Log level (debug, info, warn, error) | `info` | No |
-| `REDIS_ENABLED` | Enable Redis adapter | `false` | No |
-| `REDIS_HOST` | Redis host | `localhost` | No* |
-| `REDIS_PORT` | Redis port | `6379` | No* |
-
-*Required for multi-instance deployment
-
-For more configuration options, refer to the `.env.example` file.
-
-## Horizontal Scaling
-
-Socket Server supports horizontal scaling through Redis adapter:
-
-1. Ensure Redis is installed and running
-2. Configure Redis connection in environment variables:
-
-```
-REDIS_ENABLED=true
-REDIS_HOST=your-redis-host
-REDIS_PORT=6379
-```
-
-3. Deploy multiple service instances
-4. Configure load balancer (with WebSocket and sticky session support)
-
-## API Documentation
-
-### WebSocket Connection
-
-Client connection example:
-
-```javascript
-import { io } from "socket.io-client";
-
-const socket = io("http://your-server:3000", {
-  auth: {
-    token: "your-jwt-token"
-  }
-});
-
-socket.on("connect", () => {
-  console.log("Connected to Socket.IO server");
-});
-
-socket.on("message", (data) => {
-  console.log("Received message:", data);
-});
-
-socket.emit("send_message", {
-  recipient: "user-123",
-  content: "Hello, world!"
-});
-```
-
-### HTTP API Endpoints
-
-All HTTP API requests require an API key:
-
-```
-X-API-Key: your-api-key
-```
-
-#### Get Server Status
-
-```
-GET /api/status
-```
-
-#### Get Connection Statistics
-
-```
-GET /api/stats/connections
-```
-
-#### Send Message to Specific User
-
-```
-POST /api/message
-Content-Type: application/json
-X-API-Key: your-api-key
-
-{
-  "userId": "user-123",
-  "event": "notification",
-  "data": {
-    "message": "Hello from API"
-  }
-}
-```
-
-#### Broadcast Message to Room
-
-```
-POST /api/room/broadcast
-Content-Type: application/json
-X-API-Key: your-api-key
-
-{
-  "roomId": "room-456",
-  "event": "announcement",
-  "data": {
-    "message": "Room announcement"
-  }
-}
-```
-
-## Monitoring
-
-### Health Check
-
-The server provides a health check endpoint: `/health`
-
-### Prometheus Metrics
-
-Prometheus metrics are available at the `/metrics` endpoint.
-
-Key metrics:
-
-- `socket_connections_total`: Total connections established
-- `socket_connections_active`: Current active connections
-- `socket_messages_sent_total`: Total messages sent to clients
-- `socket_messages_received_total`: Total messages received from clients
-- `socket_rooms_total`: Total number of active rooms
-- `socket_errors_total`: Total errors encountered
-- `http_requests_total`: HTTP API request count
-- `http_request_duration_seconds`: HTTP request latency
-- `nodejs_eventloop_lag_seconds`: Event loop lag monitoring
-
-### Log Management
-
-The server uses Pino for high-performance structured logging with automatic log rotation:
-
-```
-LOG_LEVEL=info
-LOG_TO_FILE=true
-LOG_DIR=logs
-LOG_MAX_SIZE=10m
-LOG_MAX_FILES=7
-```
-
-Logs include PII redaction and structured JSON format for easy parsing and analysis.
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Create a Pull Request
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+- [Next.js](https://nextjs.org/)
+- [Socket.IO](https://socket.io/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [React](https://reactjs.org/)

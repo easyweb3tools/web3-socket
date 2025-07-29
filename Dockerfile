@@ -1,51 +1,67 @@
-# Use Ubuntu 24.04 as base
-FROM ubuntu:24.04
+# Web3 Socket.IO Dashboard Dockerfile
+# Multi-stage build for optimized production image
 
-# Install dependencies first
-RUN apt-get update && \
-    apt-get install -y curl bash && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Create non-root user with home directory
-RUN groupadd -g 1001 nodejs && \
-    useradd -r -u 1001 -g nodejs -m nextjs
-
-# Switch to non-root user for Volta installation
-USER nextjs
-
-# Install Volta as the nextjs user
-RUN curl https://get.volta.sh | bash
-
-# Add Volta to PATH for nextjs user
-ENV VOLTA_HOME="/home/nextjs/.volta"
-ENV PATH="$VOLTA_HOME/bin:$PATH"
+# Stage 1: Build stage
+FROM node:18-alpine AS builder
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files first for better layer caching
-COPY --chown=nextjs:nodejs package*.json ./
+# Copy package files
+COPY package*.json ./
 
-# Install Node.js and npm versions specified in package.json via Volta
-RUN volta install node@22.12.0 && \
-    volta install npm@10.9.0
-
-# Install all dependencies (including dev dependencies for build)
-RUN npm install && \
+# Install dependencies
+RUN npm ci --only=production --ignore-scripts && \
     npm cache clean --force
 
 # Copy source code
-COPY --chown=nextjs:nodejs . .
+COPY . .
 
 # Build the application
 RUN npm run build
 
-# Remove dev dependencies after build to reduce image size
-RUN npm prune --omit=dev
+# Stage 2: Production stage
+FROM node:18-alpine AS runner
 
-# Expose port (adjust if needed)
-EXPOSE 8081
+# Install security updates
+RUN apk update && apk upgrade && \
+    apk add --no-cache dumb-init && \
+    rm -rf /var/cache/apk/*
 
-# Use exec form for better signal handling
-CMD ["npm", "run", "start"]
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# Set working directory
+WORKDIR /app
+
+# Copy built application from builder stage
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Set environment variables
+ENV NODE_ENV=production
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Expose port
+EXPOSE 3000
+
+# Switch to non-root user
+USER nextjs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+    CMD node -e "const http = require('http'); \
+    const options = { host: '0.0.0.0', port: 3000, path: '/api/status', timeout: 2000 }; \
+    const req = http.request(options, (res) => { \
+        if (res.statusCode === 200) process.exit(0); \
+        else process.exit(1); \
+    }); \
+    req.on('error', () => process.exit(1)); \
+    req.end();"
+
+# Start the application with dumb-init for proper signal handling
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "server.js"]

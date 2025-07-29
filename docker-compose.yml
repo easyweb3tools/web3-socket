@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web3-socket:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      # 只需要暴露一个端口：3000
+      # 包含：Web界面 + Socket.IO WebSocket连接
+      # Socket.IO路径: /api/socket/io
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      # Socket.IO配置通过代码设定，无需额外端口
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - web3-network
+
+  # Optional: Redis for scaling Socket.IO (uncomment if needed)
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"
+  #   restart: unless-stopped
+  #   networks:
+  #     - web3-network
+
+networks:
+  web3-network:
+    driver: bridge
