@@ -18,6 +18,11 @@ class Logger {
   private logs: LogEntry[] = []
   private maxLogs = 1000
 
+  constructor() {
+    this.info('Logger initialized', { timestamp: new Date() })
+    this.info('System started', { version: '1.0.0' })
+  }
+
   log(level: keyof LogLevel, message: string, data?: any, socketId?: string, userId?: string) {
     const entry: LogEntry = {
       timestamp: new Date(),
